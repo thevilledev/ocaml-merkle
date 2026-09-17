@@ -237,9 +237,30 @@ let test_conversions () =
   Alcotest.check_raises "bad raw"
     (Invalid_argument "Merkle.hash_of_raw: wrong length") (fun () ->
       ignore (M.hash_of_raw "short"));
-  Alcotest.check_raises "bad hex"
-    (Invalid_argument "Merkle.hash_of_hex: invalid hex") (fun () ->
-      ignore (M.hash_of_hex "zz"))
+  let hex = M.hash_to_hex h in
+  let n = String.length hex in
+  Alcotest.(check string) "hex is lowercase" (String.lowercase_ascii hex) hex;
+  Alcotest.(check bool)
+    "uppercase hex accepted" true
+    (M.equal_hash h (M.hash_of_hex (String.uppercase_ascii hex)));
+  let hex_rejected name why s =
+    Alcotest.check_raises name
+      (Invalid_argument ("Merkle.hash_of_hex: " ^ why)) (fun () ->
+        ignore (M.hash_of_hex s))
+  in
+  (* Digestif's lenient parser accepts all of these but the odd one *)
+  hex_rejected "hex: empty" "wrong length" "";
+  hex_rejected "hex: short" "wrong length" (String.sub hex 0 (n - 2));
+  hex_rejected "hex: long" "wrong length" (hex ^ "00");
+  hex_rejected "hex: trailing newline" "wrong length" (hex ^ "\n");
+  hex_rejected "hex: leading space" "wrong length" (" " ^ hex);
+  hex_rejected "hex: odd length" "wrong length" (String.sub hex 0 (n - 1));
+  hex_rejected "hex: 0x prefix" "wrong length" ("0x" ^ hex);
+  (* right length, wrong alphabet *)
+  hex_rejected "hex: inner space" "invalid hex"
+    (" " ^ String.sub hex 1 (n - 1));
+  hex_rejected "hex: non-hex digit" "invalid hex"
+    ("g" ^ String.sub hex 1 (n - 1))
 
 let test_bounds () =
   let log = ct_log () in

@@ -64,10 +64,19 @@ module Make (H : Digestif.S) : S with type hash = H.t = struct
 
   let hash_to_hex = H.to_hex
 
+  let is_hex_digit = function
+    | '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' -> true
+    | _ -> false
+
+  (* Digestif's own hex parser is lenient: it skips whitespace, zero-pads
+     short input and truncates long input, so distinct strings would
+     parse to the same hash. Validate strictly before handing over. *)
   let hash_of_hex s =
-    match H.of_hex_opt s with
-    | Some h -> h
-    | None -> invalid_arg "Merkle.hash_of_hex: invalid hex"
+    if String.length s <> 2 * H.digest_size then
+      invalid_arg "Merkle.hash_of_hex: wrong length";
+    if not (String.for_all is_hex_digit s) then
+      invalid_arg "Merkle.hash_of_hex: invalid hex";
+    H.of_hex s
 
   (* Largest power of two strictly smaller than n (n >= 2). *)
   let split n =

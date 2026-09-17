@@ -47,8 +47,16 @@ module type S = sig
   (** @raise Invalid_argument if the input is not [hash_size] bytes. *)
 
   val hash_to_hex : hash -> string
+  (** Lowercase hexadecimal, [2 * hash_size] characters. *)
+
   val hash_of_hex : string -> hash
-  (** @raise Invalid_argument on invalid hex of the wrong size. *)
+  (** Parses exactly [2 * hash_size] hexadecimal digits, in either case.
+      This is deliberately stricter than [Digestif]'s own parser, which
+      skips whitespace, zero-pads short input and truncates long input:
+      here all of those are rejected, so distinct strings never parse
+      to the same hash.
+      @raise Invalid_argument if the length is wrong or a character is
+      not a hexadecimal digit. *)
 
   (** {1 Stateless proof verification (RFC 9162)}
 
