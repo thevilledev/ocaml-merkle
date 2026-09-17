@@ -1,0 +1,5 @@
+; The differential-test driver for this library. Not installed; built by
+; `dune build` and run by compat/run.sh.
+(executable
+ (name replay)
+ (libraries merkle))
