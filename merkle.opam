@@ -16,15 +16,14 @@ tags: [
   "org:thevilledev"
 ]
 homepage: "https://github.com/thevilledev/ocaml-merkle"
-doc: "https://github.com/thevilledev/ocaml-merkle"
 bug-reports: "https://github.com/thevilledev/ocaml-merkle/issues"
 depends: [
-  "dune" {>= "3.17"}
+  "dune" {>= "3.14"}
   "ocaml" {>= "4.14"}
   "digestif" {>= "1.0.0"}
-  "alcotest" {with-test}
-  "qcheck-core" {with-test}
-  "qcheck-alcotest" {with-test}
+  "alcotest" {with-test & >= "1.5.0"}
+  "qcheck-core" {with-test & >= "0.25"}
+  "qcheck-alcotest" {with-test & >= "0.25"}
   "odoc" {with-doc}
 ]
 build: [

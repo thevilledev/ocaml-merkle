@@ -1,4 +1,4 @@
-(lang dune 3.17)
+(lang dune 3.14)
 (name merkle)
 (version 0.1.0)
 
@@ -8,7 +8,6 @@
 (license MIT)
 (authors "Ville Vesilehto <ville@vesilehto.fi>")
 (maintainers "Ville Vesilehto <ville@vesilehto.fi>")
-(documentation "https://github.com/thevilledev/ocaml-merkle")
 
 (package
  (name merkle)
@@ -18,7 +17,7 @@
  (depends
   (ocaml (>= 4.14))
   (digestif (>= 1.0.0))
-  (alcotest :with-test)
-  (qcheck-core :with-test)
-  (qcheck-alcotest :with-test))
+  (alcotest (and :with-test (>= 1.5.0)))
+  (qcheck-core (and :with-test (>= 0.25)))
+  (qcheck-alcotest (and :with-test (>= 0.25))))
  (tags (merkle "certificate transparency" rfc6962 rfc9162 "transparency log" "org:thevilledev")))
