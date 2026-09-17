@@ -13,7 +13,7 @@
  (name merkle)
  (synopsis "RFC 6962/9162 Merkle trees: inclusion and consistency proofs")
  (description
-  "The Merkle tree construction used by Certificate Transparency and transparency logs generally (sigstore/Rekor, key transparency, binary transparency): domain-separated leaf/node hashing, audit paths, and the RFC 9162 verification algorithms for inclusion and consistency proofs. Stateless verifiers work against any log; an in-memory append-only log supports proof generation. Functorized over any digestif hash, instantiated for SHA-256. Verified against the Certificate Transparency reference test vectors.")
+  "The Merkle tree construction used by Certificate Transparency and transparency logs generally (sigstore/Rekor, key transparency, binary transparency): domain-separated leaf/node hashing, audit paths, and the RFC 9162 verification algorithms for inclusion and consistency proofs. Stateless verifiers work against any log; an in-memory append-only log supports proof generation. Functorized over any digestif hash, instantiated for SHA-256. Verified against the Certificate Transparency reference test vectors and differentially tested against the Go reference implementation, transparency-dev/merkle.")
  (depends
   (ocaml (>= 4.14))
   (digestif (>= 1.0.0))

@@ -19,6 +19,10 @@ generally:
 - Verified against the Certificate Transparency reference test vectors
   (incremental roots, inclusion paths, consistency proofs), with
   exhaustive tamper-detection tests on top
+- Differentially tested against the Go reference implementation,
+  [transparency-dev/merkle](https://github.com/transparency-dev/merkle):
+  identical roots and proofs, and the same verdict on some 128 000
+  honest and damaged proofs — see [Compatibility](#compatibility)
 
 ## Install
 
@@ -65,14 +69,42 @@ assert (M.verify_inclusion ~root ~size:(M.Log.size log) ~index:2
 
 `Log` stores one hash per leaf and recomputes roots/proofs on demand
 (O(n) time, O(log n) stack) — simple and predictable for logs up to
-millions of entries. Cached subtree hashing (compact ranges) is future
-work.
+millions of entries: on the order of a second per root or proof at a
+million leaves. Cached subtree hashing (compact ranges) is future work.
 
 ### Other hash algorithms
 
 ```ocaml
 module M512 = Merkle.Make (Digestif.SHA512)
 ```
+
+## Compatibility
+
+Proofs are RFC 6962 proofs: sibling hashes, leaf-adjacent first, and a
+consistency proof omits the old root when the old size is a power of
+two. That is what CT logs, Trillian and Rekor serve, and what
+`Log` produces.
+
+[`compat/`](compat/README.md) checks this against
+[transparency-dev/merkle](https://github.com/transparency-dev/merkle)
+on every push: the Go implementation writes the roots of a 1500-leaf
+log, several thousand proofs, and about 128 000 verification queries —
+most of them deliberately wrong in size, index, length, order or
+content — and this library must reproduce every root and proof byte
+for byte and return the same verdict on every query.
+
+One difference is deliberate. Verifying consistency from the empty tree
+(`old_size = 0`), the Go verifier ignores the old root; this library
+requires it to be the empty tree's root, `H("")`.
+
+The verifiers never raise: sizes or indices out of range and proofs of
+the wrong length are simply `false`. `hash_of_hex` and `hash_of_raw`, on
+the other hand, do raise `Invalid_argument` on anything but a
+well-formed hash of the right length — `hash_of_hex` is stricter than
+digestif's own parser, which pads short input and truncates long input.
+
+Sizes and indices are OCaml `int`s, so trees beyond 2<sup>30</sup>
+leaves need a 64-bit platform.
 
 ## References
 
@@ -81,7 +113,7 @@ module M512 = Merkle.Make (Digestif.SHA512)
 - [RFC 9162](https://www.rfc-editor.org/rfc/rfc9162) — CT v2
   (verification algorithms, §2.1.3.2 and §2.1.4.2)
 - [transparency-dev/merkle](https://github.com/transparency-dev/merkle) —
-  the Go reference this library is vector-compatible with
+  the Go reference this library is tested against
 
 ## License
 
