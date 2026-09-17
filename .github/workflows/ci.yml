@@ -3,7 +3,12 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -14,9 +19,71 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: ocaml/setup-ocaml@v3
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
-      - run: opam install . --deps-only --with-test
+          opam-repositories: |
+            default: https://opam.ocaml.org
+          opam-disable-sandboxing: true
+      - run: opam install . --deps-only --with-test --with-doc
+      - run: opam lint --warnings=@1..999 merkle.opam
+      - run: opam exec -- dune build @all @doc
+      - name: Check generated opam metadata
+        run: git diff --exit-code -- merkle.opam
+      - run: opam exec -- dune runtest
+      - name: Build and install the package
+        run: |
+          opam exec -- dune build -p merkle @install @runtest @doc
+          opam exec -- dune install --prefix "$RUNNER_TEMP/merkle-install" merkle
+
+  # The oldest versions dune-project admits. Dune 3.14.0 and digestif
+  # 1.0.0 are no longer in opam-repository, so they are pinned from their
+  # release tags; the rest are the oldest versions it still carries.
+  lower-bounds:
+    name: Lower bounds
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: "4.14.0"
+          opam-repositories: |
+            default: https://opam.ocaml.org
+          opam-disable-sandboxing: true
+      - name: Pin minimum Dune and digestif
+        run: |
+          opam pin add dune.3.14.0 git+https://github.com/ocaml/dune.git#3.14.0 --no-action --yes
+          opam pin add digestif.1.0.0 git+https://github.com/mirage/digestif.git#v1.0.0 --no-action --yes
+      - name: Install minimum dependencies
+        run: |
+          opam install dune.3.14.0 digestif.1.0.0 alcotest.1.5.0 qcheck-core.0.25 qcheck-alcotest.0.25
+          opam install . --deps-only --with-test
       - run: opam exec -- dune build @all
       - run: opam exec -- dune runtest
+
+  # Differential test against the Go reference implementation,
+  # transparency-dev/merkle: every root, several thousand proofs byte for
+  # byte, and about 128 000 verifier verdicts on honest and damaged
+  # proofs (compat/README.md).
+  differential:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: "5.4"
+          opam-repositories: |
+            default: https://opam.ocaml.org
+          opam-disable-sandboxing: true
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+          cache-dependency-path: compat/go/go.sum
+      - run: opam install . --deps-only
+      - run: opam exec -- ./compat/run.sh
