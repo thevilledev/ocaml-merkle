@@ -21,7 +21,7 @@ generally:
   exhaustive tamper-detection tests on top
 - Differentially tested against the Go reference implementation,
   [transparency-dev/merkle](https://github.com/transparency-dev/merkle):
-  identical roots and proofs, and the same verdict on some 128 000
+  identical roots and proofs, and the same verdict on some 133 000
   honest and damaged proofs — see [Compatibility](#compatibility)
 
 ## Install
@@ -88,7 +88,7 @@ two. That is what CT logs, Trillian and Rekor serve, and what
 [`compat/`](compat/README.md) checks this against
 [transparency-dev/merkle](https://github.com/transparency-dev/merkle)
 on every push: the Go implementation writes the roots of a 1500-leaf
-log, several thousand proofs, and about 128 000 verification queries —
+log, several thousand proofs, and about 133 000 verification queries —
 most of them deliberately wrong in size, index, length, order or
 content — and this library must reproduce every root and proof byte
 for byte and return the same verdict on every query.
