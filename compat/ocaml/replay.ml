@@ -81,14 +81,19 @@ let () =
              ~new_size:(int_of_string new_size) ~new_root:(hash new_root)
              ~proof:(proof p)
          in
-         if got <> (want = "1") then
+         let empty_root_ok = M.equal_hash old_root M.empty_root in
+         if old_size = 0 && got && not empty_root_ok then
+           (* The rule behind the documented difference, checked on its
+              own: agreeing with Go here is no evidence, as Go accepts
+              any old root of size 0. *)
+           mismatch "verify_consistency accepts an old root of size 0 other \
+                     than H(\"\"): %s"
+             line
+         else if got <> (want = "1") then
            (* The one documented difference: from the empty tree this
               library also requires old_root = H(""), which the Go
               verifier does not look at. *)
-           if
-             old_size = 0 && want = "1"
-             && not (M.equal_hash old_root M.empty_root)
-           then incr stricter
+           if old_size = 0 && want = "1" && not empty_root_ok then incr stricter
            else mismatch "verify_consistency: go %s, ocaml %b: %s" want got line
        | _ -> mismatch "unparsed line: %s" line
      done

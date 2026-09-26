@@ -29,11 +29,12 @@ damaged copies — index and sizes off by one or two, doubled, halved,
 zeroed, swapped, or pushed out by 2<sup>40</sup>; the proof truncated at
 either end, extended at either end (with a random hash, with the root,
 with the old root), reversed, with its ends swapped, or with one bit
-flipped; a leaf or a root with one bit flipped. Some of those are still
+flipped; a leaf or a root with one bit flipped; equal sizes with equal
+roots that are not the tree's. Some of those are still
 valid — the audit path of leaf 0 has the same shape in a tree of three
 leaves as in a tree of four — which is exactly why the verdict is taken
 from the reference rather than assumed. With the default settings that is
-about 128 000 verdicts.
+about 133 000 verdicts.
 
 ## The one documented difference
 
@@ -42,6 +43,13 @@ requires it to be the root of the empty tree, `H("")`, as the `.mli`
 says: a caller holding some other "root of size 0" is holding something
 that is not a tree head. `replay` counts these queries separately and
 does not treat them as failures. Any other disagreement is one.
+
+Agreeing with Go says nothing about that rule, since Go accepts every
+old root of size 0. So `replay` also checks the rule on its own: any
+query with `old_size = 0` that this library accepts must have `H("")`
+as its old root, whatever Go's verdict. Release 0.1.0 broke the rule
+for `0 -> 0` and agreed with Go while doing so. A check that compares
+verdicts could not have noticed.
 
 ## Running it
 

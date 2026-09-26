@@ -94,7 +94,7 @@ module type S = sig
       extension of the tree of size [old_size]. The empty tree
       ([old_size = 0], [old_root = empty_root]) is consistent with
       every tree via an empty proof; equal sizes require equal roots
-      and an empty proof.
+      and an empty proof (and at size 0, that both are {!empty_root}).
 
       RFC 9162 only defines the algorithm for [0 < old_size < new_size];
       the two cases above follow the Go reference implementation, with
