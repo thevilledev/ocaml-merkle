@@ -82,6 +82,12 @@ honest and damaged proofs. `conformance/check.exe` replays them against
 the library on the SHA-256 hashes the symbols denote. Every root and proof
 must be identical, and every verdict the same. They are.
 
+`verifyConsistency` models `verify_consistency` as released in 0.1.0,
+and the proofs and the finding are about that. The library now carries
+the fix for finding 1, which `verifyConsistencyFixed` (`Findings.lean`)
+models. So `check.sh` runs the conformance check against the patched
+model (`conformance 40 fixed`).
+
 ## Findings
 
 1. **`verify_consistency` accepts any old root from the empty tree to the
@@ -94,9 +100,9 @@ must be identical, and every verdict the same. They are.
    - The Go differential test could not have caught this. Go accepts any
      old root of size 0, so on these queries the two implementations
      agreed, and a check that compares verdicts saw nothing wrong.
-   - Fixed on branch `fix/consistency-empty-tree-root`. That branch also
-     makes the harness check the empty-tree rule independently of Go and
-     adds these queries to its corpus. Against release 0.1.0 it now
+   - Fixed in thevilledev/ocaml-merkle#1, which also makes the harness
+     check the empty-tree rule independently of Go and adds these queries
+     to its corpus. Against release 0.1.0 it now
      reports 42 mismatches. The patch is proved sound and complete in Lean
      (`fixed_sound`, `fixed_complete`, `fixed_meets_contract`) and passes
      every TLC model.
@@ -108,7 +114,7 @@ must be identical, and every verdict the same. They are.
    `.mli` said that "distinct strings never parse to the same hash", but
    upper and lower case parse alike (Lean: `Hex.hashOfHex_not_injective`).
    The true statement is proved (`Hex.hashOfHex_same_iff`). The
-   documentation is corrected on branch `fix/hash-of-hex-doc`.
+   documentation is corrected in thevilledev/ocaml-merkle#2.
 
 Nothing else was found. The RFC 9162 loops, the RFC 6962 proof generation,
 the array storage and the hex validation are correct as specified.

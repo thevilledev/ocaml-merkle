@@ -109,7 +109,8 @@ def conWalk [DecidableEq α] (oldRoot newRoot : α) (m n : Nat) : List α → Bo
     let fnsn := stripNum (m - 1) (n - 1)
     conVerdict oldRoot newRoot (conFold H (fnsn.1, fnsn.2, first, first) rest)
 
-/-- OCaml:
+/-- `verify_consistency` as released in 0.1.0; the patched verifier is
+    `verifyConsistencyFixed` in `Findings.lean`. OCaml:
 
       let verify_consistency ~old_size ~old_root ~new_size ~new_root ~proof =
         if old_size < 0 || new_size < old_size then false

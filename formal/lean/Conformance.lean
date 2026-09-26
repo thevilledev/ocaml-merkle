@@ -13,7 +13,7 @@
   `,`):
 
   Usage: `conformance [MAX_SIZE] [fixed]`; `fixed` models the patched
-  `verify_consistency` of branch fix/consistency-empty-tree-root.
+  `verify_consistency` (thevilledev/ocaml-merkle#1, the library since).
 
       R n root                        Log.root_at n
       P i n proof                     Log.inclusion_proof ~index:i ~size:n

@@ -27,7 +27,8 @@ if grep -o "depends on axioms: \[.*\]" _out/axioms.txt | sed 's/.*\[//; s/\]//' 
 fi
 
 echo "== model conformance: Lean model vs OCaml library"
-(cd lean && lake build conformance && .lake/build/bin/conformance 40 > "$here/_out/conformance.txt")
+# `fixed`: the library carries the verify_consistency fix of finding 1
+(cd lean && lake build conformance && .lake/build/bin/conformance 40 fixed > "$here/_out/conformance.txt")
 (cd .. && dune build ./formal/conformance/check.exe &&
   ./_build/default/formal/conformance/check.exe formal/_out/conformance.txt)
 
