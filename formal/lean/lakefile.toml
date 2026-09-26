@@ -1,0 +1,9 @@
+name = "merkle-formal"
+defaultTargets = ["Merkle"]
+
+[[lean_lib]]
+name = "Merkle"
+
+[[lean_exe]]
+name = "conformance"
+root = "Conformance"

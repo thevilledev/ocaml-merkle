@@ -3,3 +3,6 @@ _opam/
 *.install
 .DS_Store
 compat/_out/
+formal/_out/
+formal/tla/states/
+formal/tla/*_TTrace_*

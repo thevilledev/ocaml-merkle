@@ -1,0 +1,5 @@
+; Replays the corpus the Lean model writes (formal/lean/Conformance.lean)
+; against the library. Run by formal/check.sh.
+(executable
+ (name check)
+ (libraries merkle))
