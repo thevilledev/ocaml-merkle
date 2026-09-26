@@ -91,10 +91,13 @@ must be identical, and every verdict the same. They are.
    ~proof:[]` is `true` for every `x`.
    - Lean: `emptyTreeContract_violated`.
    - TLC: `VerifierContracts_empty_bug.cfg`.
-   - The Go differential test could not notice. Go accepts these queries,
-     and its corpus never asked them.
-   - Fixed on branch `fix/consistency-empty-tree-root`, which also extends
-     the Go corpus. The patch is proved sound and complete in Lean
+   - The Go differential test could not have caught this. Go accepts any
+     old root of size 0, so on these queries the two implementations
+     agreed, and a check that compares verdicts saw nothing wrong.
+   - Fixed on branch `fix/consistency-empty-tree-root`. That branch also
+     makes the harness check the empty-tree rule independently of Go and
+     adds these queries to its corpus. Against release 0.1.0 it now
+     reports 42 mismatches. The patch is proved sound and complete in Lean
      (`fixed_sound`, `fixed_complete`, `fixed_meets_contract`) and passes
      every TLC model.
    - The fix branch's code agrees with the patched model on every
