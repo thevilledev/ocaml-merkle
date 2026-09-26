@@ -209,6 +209,16 @@ module Suite (M : Merkle.S) = struct
     Alcotest.(check bool)
       "uppercase hex accepted" true
       (M.equal_hash h (M.hash_of_hex (String.uppercase_ascii hex)));
+    (* case is the only freedom: printing a parsed string gives it back
+       in lowercase, whatever mix of cases it came in *)
+    let mixed =
+      String.mapi
+        (fun i c -> if i mod 2 = 0 then Char.uppercase_ascii c else c)
+        hex
+    in
+    Alcotest.(check string)
+      "mixed-case hex round-trips to lowercase" hex
+      (M.hash_to_hex (M.hash_of_hex mixed));
     let raw_rejected name s =
       Alcotest.check_raises name
         (Invalid_argument "Merkle.hash_of_raw: wrong length") (fun () ->

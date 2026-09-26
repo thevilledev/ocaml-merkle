@@ -10,6 +10,11 @@
   checks the empty-tree rule on its own, whatever Go's verdict, and its
   corpus includes equal sizes with equal roots that are not the tree's.
   Against release 0.1.0 it reports this bug 42 times.
+- Documentation: `hash_of_hex` is not injective, as its interface
+  claimed ("distinct strings never parse to the same hash"): it accepts
+  either case, so strings differing in letter case alone parse to the
+  same hash. The interface now says so, and that `hash_to_hex` gives
+  back the input in lowercase. Found by formal verification.
 
 # 0.1.0 (2026-09-17)
 

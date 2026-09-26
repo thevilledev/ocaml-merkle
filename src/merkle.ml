@@ -69,8 +69,9 @@ module Make (H : Digestif.S) : S with type hash = H.t = struct
     | _ -> false
 
   (* Digestif's own hex parser is lenient: it skips whitespace, zero-pads
-     short input and truncates long input, so distinct strings would
-     parse to the same hash. Validate strictly before handing over. *)
+     short input and truncates long input, so strings that differ in
+     more than letter case would parse to the same hash. Validate
+     strictly before handing over. *)
   let hash_of_hex s =
     if String.length s <> 2 * H.digest_size then
       invalid_arg "Merkle.hash_of_hex: wrong length";

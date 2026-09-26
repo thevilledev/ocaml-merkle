@@ -59,8 +59,9 @@ module type S = sig
   (** Parses exactly [2 * hash_size] hexadecimal digits, in either case.
       This is deliberately stricter than [Digestif]'s own parser, which
       skips whitespace, zero-pads short input and truncates long input:
-      here all of those are rejected, so distinct strings never parse
-      to the same hash.
+      here all of those are rejected, so two strings parse to the same
+      hash only when they differ in letter case alone, and
+      [hash_to_hex (hash_of_hex s)] is [String.lowercase_ascii s].
       @raise Invalid_argument if the length is wrong or a character is
       not a hexadecimal digit. *)
 
