@@ -186,6 +186,11 @@ func consistencyQueries(t *testonly.Tree, size1, size2 uint64) {
 	qc(size1, size2, root2, root1, p)
 	qc(size2, size1, root2, root1, p)
 	qc(size2, size1, root1, root2, p)
+	// Equal sizes and equal roots, but not the roots of the tree: from
+	// size 0 this is the documented difference (only H("") is a root).
+	bogus := randHash()
+	qc(size1, size1, bogus, bogus, [][]byte{})
+	qc(size2, size2, bogus, bogus, [][]byte{})
 	for _, d := range []int64{-2, -1, 1, 2} {
 		if s := int64(size1) + d; s >= 0 {
 			qc(uint64(s), size2, root1, root2, p)

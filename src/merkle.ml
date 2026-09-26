@@ -154,7 +154,10 @@ module Make (H : Digestif.S) : S with type hash = H.t = struct
   let verify_consistency ~old_size ~old_root ~new_size ~new_root ~proof =
     if old_size < 0 || new_size < old_size then false
     else if old_size = new_size then
+      (* the empty tree's only valid root is H(""), even when the new
+         tree is empty too *)
       proof = [] && H.equal old_root new_root
+      && (old_size > 0 || H.equal old_root empty_root)
     else if old_size = 0 then
       (* the empty tree, whose only valid root is H(""), is consistent
          with everything via an empty proof *)

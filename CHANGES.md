@@ -1,5 +1,15 @@
 # Unreleased
 
+- `verify_consistency` no longer accepts an old root other than the
+  empty tree's, `H("")`, when both sizes are 0. The documented rule —
+  from the empty tree, `old_root` must be `empty_root` — was enforced
+  only when the new tree was non-empty: `(0, X) -> (0, X)` verified for
+  any `X`. Found by formal verification of the documented contract.
+- The differential test could not catch this. The Go reference accepts
+  any old root of size 0, so on these queries the two agreed. It now
+  checks the empty-tree rule on its own, whatever Go's verdict, and its
+  corpus includes equal sizes with equal roots that are not the tree's.
+  Against release 0.1.0 it reports this bug 42 times.
 - Documentation: `hash_of_hex` is not injective, as its interface
   claimed ("distinct strings never parse to the same hash"): it accepts
   either case, so strings differing in letter case alone parse to the

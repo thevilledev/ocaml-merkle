@@ -67,7 +67,7 @@ jobs:
 
   # Differential test against the Go reference implementation,
   # transparency-dev/merkle: every root, several thousand proofs byte for
-  # byte, and about 128 000 verifier verdicts on honest and damaged
+  # byte, and about 133 000 verifier verdicts on honest and damaged
   # proofs (compat/README.md).
   differential:
     runs-on: ubuntu-latest

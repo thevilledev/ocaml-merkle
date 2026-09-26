@@ -107,6 +107,7 @@ module Suite (M : Merkle.S) = struct
     if old_size < 0 || new_size < old_size then false
     else if old_size = new_size then
       proof = [] && M.equal_hash old_root new_root
+      && (old_size > 0 || M.equal_hash old_root M.empty_root)
     else if old_size = 0 then proof = [] && M.equal_hash old_root M.empty_root
     else
       match
@@ -640,6 +641,14 @@ let test_consistency_special_cases () =
   check_true "0 = 0"
     (M.verify_consistency ~old_size:0 ~old_root:M.empty_root ~new_size:0
        ~new_root:M.empty_root ~proof:[]);
+  (* equal roots are not enough when the size is 0: the empty tree has
+     one root, H(""), whatever the new tree *)
+  check_false "0 = 0, old root is not H(\"\")"
+    (M.verify_consistency ~old_size:0 ~old_root:(r 1) ~new_size:0
+       ~new_root:(r 1) ~proof:[]);
+  check_false "0 = 0, new root is not H(\"\")"
+    (M.verify_consistency ~old_size:0 ~old_root:M.empty_root ~new_size:0
+       ~new_root:(r 1) ~proof:[]);
   (* from the empty tree *)
   check_true "0 -> 4"
     (M.verify_consistency ~old_size:0 ~old_root:M.empty_root ~new_size:4
